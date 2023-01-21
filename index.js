@@ -14,12 +14,23 @@ let site = {
 }
 
 console.info(`
+
+██░ ██  ▒█████   ▄▄▄       ██▀███  ▓█████▄ ▓█████  ██▀███  
+▓██░ ██▒▒██▒  ██▒▒████▄    ▓██ ▒ ██▒▒██▀ ██▌▓█   ▀ ▓██ ▒ ██▒
+▒██▀▀██░▒██░  ██▒▒██  ▀█▄  ▓██ ░▄█ ▒░██   █▌▒███   ▓██ ░▄█ ▒
+░▓█ ░██ ▒██   ██░░██▄▄▄▄██ ▒██▀▀█▄  ░▓█▄   ▌▒▓█  ▄ ▒██▀▀█▄  
+░▓█▒░██▓░ ████▓▒░ ▓█   ▓██▒░██▓ ▒██▒░▒████▓ ░▒████▒░██▓ ▒██▒
+ ▒ ░░▒░▒░ ▒░▒░▒░  ▒▒   ▓▒█░░ ▒▓ ░▒▓░ ▒▒▓  ▒ ░░ ▒░ ░░ ▒▓ ░▒▓░
+ ▒ ░▒░ ░  ░ ▒ ▒░   ▒   ▒▒ ░  ░▒ ░ ▒░ ░ ▒  ▒  ░ ░  ░  ░▒ ░ ▒░
+ ░  ░░ ░░ ░ ░ ▒    ░   ▒     ░░   ░  ░ ░  ░    ░     ░░   ░ 
+ ░  ░  ░    ░ ░        ░  ░   ░        ░       ░  ░   ░     
+                                                        
 Welcome to the Hoarder CLI!
 What would you like to do?
 `)
 
 function askForAction() {
-        const action = prompt(`Actions: [o]pen a website, [s]ave a website or [q]uit \n >`);
+        const action = prompt(`Actions: [o]pen a website, [s]ave a website or [q]uit > `);
         switch (action) {
             case 'o':
                 openAWebsite()
@@ -42,8 +53,8 @@ function askForAction() {
 
 
 function saveAWebsite() {
-    site.url = prompt('Paste a link to a website here: \n > ');
-    site.name = prompt('Name of the file it will be stored in \n > ')
+    site.url = prompt('Paste a link to a website here: > ');
+    site.name = prompt('Name of the file it will be stored in > ')
     downloadSite(site.url, site.name)
 }
 
