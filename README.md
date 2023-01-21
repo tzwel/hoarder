@@ -1,7 +1,7 @@
 # hoarder
 
 ```
-git clone
+git clone https://github.com/tzwel/hoarder.git
 ```
 
 ```
