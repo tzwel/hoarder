@@ -16,11 +16,10 @@ async function downloadSite(url, name) {
         const bodyElements = dom.window.document.getElementsByTagName("html");
         const bodyElement = bodyElements[0];
         const images = bodyElement.querySelectorAll('img[src]')
-        if (images) images.forEach(image => {
+        if (images && images.length) images.forEach(image => {
             const hash = crypto.createHash('md5').update(image.src).digest('hex');
             const imgSrc = image.src
             const extension = nodePath.extname(imgSrc).match(/.[a-z]+/)[0]
-
             if (bodyElement.querySelector(`[src="${imgSrc}"]`) && bodyElement.querySelector(`[src="${imgSrc}"]`).src.startsWith('/')) {
                 bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
                 bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', domain + imgSrc)
@@ -37,15 +36,13 @@ async function downloadSite(url, name) {
         
 
         const styles = bodyElement.querySelectorAll('link[rel="stylesheet"]')
-        if (styles) styles.forEach(style => {
+        if (styles && styles.length) styles.forEach(style => {
             const extension = nodePath.extname(style.href).match(/.[a-z]+/)[0]
-
             const hash = crypto.createHash('md5').update(style.href).digest('hex');
             const styleSrc = style.href
 
             
             if (bodyElement.querySelector(`[href="${styleSrc}"]`) && bodyElement.querySelector(`[href="${styleSrc}"]`).href.startsWith('/')) {
-
                 bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('hash', hash)
           //      bodyElement.querySelector(`[href="${styleSrc}"]`).href = domain + bodyElement.querySelector(`[href="${styleSrc}"]`).href
                 bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('trueHref', domain + styleSrc)
@@ -53,10 +50,17 @@ async function downloadSite(url, name) {
 
             //    bodyElement.querySelector(`[src="${styleSrc}"]`).href = './styles/' + hash + extension 
 
+            } else if (bodyElement.querySelector(`[href="${styleSrc}"]`).href.startsWith('h')) {
+                bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('hash', hash)
+                bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('trueHref', styleSrc)
+                bodyElement.querySelector(`[href="${styleSrc}"]`).href = domain + bodyElement.querySelector(`[href="${styleSrc}"]`).href
+
             } else {
                 bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('hash', hash)
-                bodyElement.querySelector(`[href="${styleSrc}"]`).href = domain + bodyElement.querySelector(`[href="${styleSrc}"]`).href
-                bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('trueHref', styleSrc)
+                bodyElement.querySelector(`[href="${styleSrc}"]`).setAttribute('trueHref', domain + '/' + styleSrc)
+                bodyElement.querySelector(`[href="${styleSrc}"]`).href = './styles/' + hash + extension 
+
+
             }
 
         });
