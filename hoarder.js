@@ -119,7 +119,7 @@ function downloadHash(thing, dir, hash) {
       
             file.on('finish', () => {
             file.close()
-                console.log(path);
+               // console.log(path);
           })
         })
         .on('error', err => {

@@ -19,24 +19,27 @@ What would you like to do?
 `)
 
 function askForAction() {
-    const action = prompt(`Actions: [O]pen a website or [S]ave a website \n >`);
-    switch (action) {
-        case 'o':
-            openAWebsite()
-            break;
-
-        case 's':
-            saveAWebsite()
-            break;
-
+        const action = prompt(`Actions: [o]pen a website, [s]ave a website or [q]uit \n >`);
+        switch (action) {
+            case 'o':
+                openAWebsite()
+                break;
     
-        default:
-            askForAction()
-            break;
-    }
+            case 's':
+                saveAWebsite()
+                break;
+            
+            case 'q':
+                process.exit()
+                break;
+    
+        
+            default:
+                askForAction()
+                break;
+        }
 }
 
-askForAction()
 
 function saveAWebsite() {
     site.url = prompt('Paste a link to a website here: \n > ');
@@ -52,4 +55,7 @@ async function openAWebsite() {
     });
     const websiteToOpen = availableWebsites[Number(prompt('>'))]
     await open(__dirname + '/sites/' + websiteToOpen)
+    askForAction()
 }
+
+askForAction()
