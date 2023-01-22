@@ -4,7 +4,9 @@ const fs = require('fs');
 const https = require('https');
 const nodePath = require('path')
 const crypto = require('crypto')
-
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('db.sqlite');
+db.run('CREATE TABLE IF NOT EXISTS websites(url text, name text, tags text)');
 async function downloadSite(url, name) {
     const domain = url.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/img)[0]
 
@@ -19,18 +21,52 @@ async function downloadSite(url, name) {
         if (images && images.length) images.forEach(image => {
             const hash = crypto.createHash('md5').update(image.src).digest('hex');
             const imgSrc = image.src
-            const extension = nodePath.extname(imgSrc).match(/.[a-z]+/)[0]
+            const extension = nodePath.extname(imgSrc).match(/.[a-z]+/)[0] /*
             if (bodyElement.querySelector(`[src="${imgSrc}"]`) && bodyElement.querySelector(`[src="${imgSrc}"]`).src.startsWith('/')) {
-                bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
-                bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', domain + imgSrc)
+      //          bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', 'https:' + imgSrc)
+                if (bodyElement.querySelector(`[src="${imgSrc}"]`).src.startsWith('//')) {
+                    console.log('https:' + imgSrc);
+                    bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', 'https:' + imgSrc)
+                    bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', crypto.createHash('md5').update('https:' + image.src).digest('hex'))
+
+                } else if (bodyElement.querySelector(`[src="${imgSrc}"]`).src.startsWith('h')) {
+                    console.log('123');
+                    bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', imgSrc)
+                    bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
+
+                } else {
+                    console.log('asd');
+                    bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', imgSrc)
+                    bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
+
+                }
+
                 bodyElement.querySelector(`[src="${imgSrc}"]`).src = './images/' + hash + extension 
-    
+
             } else {
                 bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
                 bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', imgSrc)
+
+
+                bodyElement.querySelector(`[src="${imgSrc}"]`).src = './images/' + hash + extension 
+    
+            } */
+
+            if (imgSrc.startsWith('//')) {
+                bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', 'https:' + imgSrc)
+                bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
+                bodyElement.querySelector(`[src="${imgSrc}"]`).src = './images/' + hash + extension 
+    
+            } else {
+                bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('trueSrc', imgSrc)
+                bodyElement.querySelector(`[src="${imgSrc}"]`).setAttribute('hash', hash)
                 bodyElement.querySelector(`[src="${imgSrc}"]`).src = './images/' + hash + extension 
     
             }
+
+
+
+
         });
 
         
@@ -74,14 +110,20 @@ async function downloadSite(url, name) {
         }
 
 
-        saveFile(`./sites/${name}.html`, bodyElement.innerHTML)
+        saveFile(`./sites/${name}.html`, bodyElement.innerHTML, name, url)
       } catch (err) {
         console.log(`errorrr ${err}`)
       }
 }
 
-function saveFile(path, content) {
-    fs.writeFile(path, content, function(err) {
+function saveFile(path, content, name, url) {
+    db.run(`INSERT INTO websites(url, name) VALUES (?,?)`, [url, name], function(err) {
+        if (err) {
+          return console.log(err.message);
+        }
+    })
+
+      fs.writeFile(path, content, function(err) {
         if (err) {
             return console.log(err);
         }
@@ -95,7 +137,7 @@ function saveFiles(code) {
     const images = dom.window.document.querySelectorAll('img[src]')
     if (images) {
         images.forEach(img => {
-            downloadHash(img.getAttribute('trueSrc'), 'images')
+            downloadHash(img.getAttribute('trueSrc'), 'images', img.getAttribute('hash'))
         })
     }
 
@@ -123,7 +165,6 @@ function downloadHash(thing, dir, hash) {
       
             file.on('finish', () => {
             file.close()
-               // console.log(path);
           })
         })
         .on('error', err => {

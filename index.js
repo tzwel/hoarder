@@ -2,6 +2,8 @@ const { downloadSite } = require('./hoarder')
 const prompt = require('prompt-sync')();
 const fs = require('fs');
 const open = require('open');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('db.sqlite');
 
 if (!fs.existsSync('./sites/images')){
     fs.mkdirSync('./sites/images', { recursive: true });
@@ -59,6 +61,27 @@ function saveAWebsite() {
 }
 
 async function openAWebsite() {
+    db.all("select * from websites", async function(err, rows) {  
+
+        for (let index = 0; index < rows.length; index++) {
+            console.log(`[${index}] ${rows[index].name} (${rows[index].url})`)
+        }
+        const indexChosen = prompt('(number or a name) >')
+        if (!/\d+/.test(indexChosen)) {
+            const result = rows.filter(obj => {
+                return obj.name === indexChosen
+            })
+            await open(__dirname + '/sites/' + indexChosen + '.html')
+
+        } else {
+            await open(__dirname + '/sites/' + rows[indexChosen].name + '.html')
+        }
+
+        /*
+        rows.forEach(function (row) {  
+            console.log(row.name, row.url); 
+        }) */
+    })      /*
     const availableWebsites = []
     console.info('\n Available websites:')
     fs.readdirSync('./sites').forEach(file => {
@@ -66,7 +89,7 @@ async function openAWebsite() {
     });
     const websiteToOpen = availableWebsites[Number(prompt('>'))]
     await open(__dirname + '/sites/' + websiteToOpen)
-    askForAction()
+    askForAction()*/
 }
 
 askForAction()
