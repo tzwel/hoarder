@@ -17,7 +17,7 @@ let site = {
 
 console.info(`
 
-██░ ██  ▒█████   ▄▄▄       ██▀███  ▓█████▄ ▓█████  ██▀███  
+ ██░ ██  ▒█████   ▄▄▄       ██▀███  ▓█████▄ ▓█████  ██▀███  
 ▓██░ ██▒▒██▒  ██▒▒████▄    ▓██ ▒ ██▒▒██▀ ██▌▓█   ▀ ▓██ ▒ ██▒
 ▒██▀▀██░▒██░  ██▒▒██  ▀█▄  ▓██ ░▄█ ▒░██   █▌▒███   ▓██ ░▄█ ▒
 ░▓█ ░██ ▒██   ██░░██▄▄▄▄██ ▒██▀▀█▄  ░▓█▄   ▌▒▓█  ▄ ▒██▀▀█▄  
@@ -66,30 +66,18 @@ async function openAWebsite() {
         for (let index = 0; index < rows.length; index++) {
             console.log(`[${index}] ${rows[index].name} (${rows[index].url})`)
         }
-        const indexChosen = prompt('(number or a name) >')
+        const indexChosen = prompt('(number or a name) > ')
         if (!/\d+/.test(indexChosen)) {
             const result = rows.filter(obj => {
                 return obj.name === indexChosen
             })
             await open(__dirname + '/sites/' + indexChosen + '.html')
-
+            askForAction()
         } else {
             await open(__dirname + '/sites/' + rows[indexChosen].name + '.html')
+            askForAction()
         }
-
-        /*
-        rows.forEach(function (row) {  
-            console.log(row.name, row.url); 
-        }) */
-    })      /*
-    const availableWebsites = []
-    console.info('\n Available websites:')
-    fs.readdirSync('./sites').forEach(file => {
-        if (file.endsWith('.html')) console.log(`> [${availableWebsites.length}] ${file}`), availableWebsites.push(file)
-    });
-    const websiteToOpen = availableWebsites[Number(prompt('>'))]
-    await open(__dirname + '/sites/' + websiteToOpen)
-    askForAction()*/
+    })
 }
 
 askForAction()
